@@ -1,4 +1,4 @@
-# AAHL 2025-26 — Commissioner Setup Checklist
+# AAHL 2025-26 — Commissioner Setup Checklist - rebuild
 
 Complete these in order. Each section unlocks the next.
 
@@ -199,5 +199,5 @@ Upload via GitHub → **Add file → Upload files**
 | Entry cutoff | October 7, 2025 (11:59 PM ET) |
 | Opening night | October 8, 2025 |
 | Max entries per person | 3 |
-| Live site URL | https://matthope001-hub.github.io/AAHL---Angry-Alpaha-Hockey-League/ |
-| GitHub repo | https://github.com/matthope001-hub/AAHL---Angry-Alpaha-Hockey-League |
+| Live site URL | [https://matthope001-hub.github.io/AAHL---Angry-Alpaha-Hockey-League/](https://matthope001-hub.github.io/AAHL/#home) |
+| GitHub repo | [https://github.com/matthope001-hub/AAHL---Angry-Alpaha-Hockey-League](https://github.com/matthope001-hub/AAHL) |
