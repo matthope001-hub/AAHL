@@ -13,8 +13,8 @@ Complete these in order. Each section unlocks the next.
 - [ ] Click **Create database**
   - Mode: **Native mode**
   - Location: **us-central1**
-- [ ] In left sidebar → **Project Settings** (gear icon)
-- [ ] Copy your **Project ID** — looks like `aahl-2526-xxxxx` → save it somewhere
+- [ ] In left sidebar → **Project Settings** (gear icon) 
+- [ ] Copy your **Project ID** — looks like `aahl-2526-xxxxx` → save it somewhere Project ID aahl-2526 Project number 293365274832
 
 ---
 
