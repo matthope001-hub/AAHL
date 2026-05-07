@@ -5,7 +5,7 @@
 // ============================================================
 
 // ── CONFIG — fill these in after setup ────────────────────────
-const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxixSHzuApsOHAQKN4Qz1nbmKMN-T7vBgwaW0k2b5rlxGuFcaqx7A_8jZL73kwZbM09/exec';
 
 const FIREBASE_CONFIG = {
   apiKey:            'YOUR_FIREBASE_API_KEY_HERE',
