@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AAHL 2025-26 — Angry Alpaca Hockey League</title>
+  <meta name="description" content="Angry Alpaca Hockey League — 2025-26 NHL Fantasy Pool">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-inner">
+    <a class="wordmark" onclick="routeToPage('home')">
+      <div class="wm-badge">AA</div>
+      <div class="wm-text">
+        ANGRY ALPACA
+        <span>HOCKEY LEAGUE · 2025-26</span>
+      </div>
+    </a>
+    <nav>
+      <button class="nav-btn active" data-page="home">
+        <span class="live-dot" id="live-dot" style="display:none"></span>
+        <span id="live-text">HOME</span>
+      </button>
+      <button class="nav-btn" data-page="picks">ENTER POOL</button>
+      <button class="nav-btn" data-page="standings">STANDINGS</button>
+      <button class="nav-btn" data-page="rules">RULES</button>
+      <button class="nav-btn" data-page="admin">ADMIN</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ── TICKER ── -->
+<div class="ticker-wrap">
+  <div class="ticker-label">STANDINGS</div>
+  <div id="ticker-inner" class="ticker-inner">
+    <span class="ticker-item"><span class="ti-name">Loading…</span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     HOME PAGE
+════════════════════════════════════════════ -->
+<div id="page-home" class="page on">
+  <div class="wrap">
+
+    <div class="home-topbar">
+      <div>
+        <div class="label label-ice" style="margin-bottom:8px">2025-26 NHL SEASON</div>
+        <h1>POOL <span>STANDINGS</span></h1>
+      </div>
+      <button class="btn btn-ice" onclick="routeToPage('picks')">ENTER POOL →</button>
+    </div>
+
+    <!-- KPI Bar -->
+    <div class="kpi-bar" style="margin-bottom:20px">
+      <div class="kpi" id="kpi-entries">
+        <div class="kpi-label">Entries</div>
+        <div class="kpi-val">—</div>
+        <div class="kpi-sub">Loading…</div>
+      </div>
+      <div class="kpi" id="kpi-pool">
+        <div class="kpi-label">Prize Pool</div>
+        <div class="kpi-val">—</div>
+        <div class="kpi-sub">—</div>
+      </div>
+      <div class="kpi" id="kpi-leader">
+        <div class="kpi-label">Leader Pts</div>
+        <div class="kpi-val">—</div>
+        <div class="kpi-sub">—</div>
+      </div>
+      <div class="kpi" id="kpi-days">
+        <div class="kpi-label">Entry Cutoff</div>
+        <div class="kpi-val">—</div>
+        <div class="kpi-sub">Oct 7 deadline</div>
+      </div>
+    </div>
+
+    <!-- 3 Stars of the Night -->
+    <div class="stars-wrap panel" style="margin-bottom:20px">
+      <div class="panel-head">
+        <div class="panel-title amber">⭐ 3 STARS OF THE NIGHT</div>
+        <div id="stars-date" class="label">Loading…</div>
+      </div>
+      <div id="stars-body">
+        <div class="stars-empty"><div class="spinner" style="margin:0 auto 8px"></div>LOADING</div>
+      </div>
+    </div>
+
+    <!-- Main grid -->
+    <div class="home-grid">
+
+      <!-- Standings panel -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title ice">LEADERBOARD</div>
+          <div class="label">Click row for full roster</div>
+        </div>
+        <!-- Column headers -->
+        <div class="sc-cols">
+          <span class="ca">#</span>
+          <span></span>
+          <span>TEAM</span>
+          <span class="ca">🎩</span>
+          <span class="ra">Δ</span>
+          <span class="ra">PTS</span>
+        </div>
+        <!-- Rows -->
+        <div id="home-standings-body">
+          <div class="loading-row"><div class="spinner"></div>LOADING</div>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <!-- Hat Trick Hall -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title amber">🎩 HAT TRICK HALL</div>
+            <div class="label">Season total</div>
+          </div>
+          <div id="ht-hall-body">
+            <div class="loading-row" style="padding:20px"><div class="spinner"></div></div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="panel" style="padding:20px;text-align:center">
+          <div class="label label-ice" style="margin-bottom:8px">ENTRY DEADLINE</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;margin-bottom:4px">
+            OCT 7, 2025
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:16px">
+            6F · 4D · 2G · 4 Division picks<br>$50 entry · max 3 entries per person
+          </div>
+          <button class="submit-btn" style="max-width:240px;margin:0 auto;display:block" onclick="routeToPage('picks')">
+            ENTER THE POOL
+          </button>
+          <div style="font-size:11px;color:var(--text3);margin-top:10px">
+            E-transfer: matt.hope@rocketmail.com
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PICKS PAGE
+════════════════════════════════════════════ -->
+<div id="page-picks" class="page">
+  <div class="wrap">
+    <div class="picks-topbar">
+      <div class="label label-ice" style="margin-bottom:8px">2025-26 ENTRY FORM</div>
+      <h1>BUILD YOUR <span>ROSTER</span></h1>
+      <p>Pick 6 forwards, 4 defence, 2 goalies + 4 division winners · $50 per entry · max 3 entries</p>
+    </div>
+
+    <!-- Locked message -->
+    <div id="picks-locked-msg" style="display:none" class="panel" style="padding:32px;text-align:center">
+      <div style="font-size:32px;margin-bottom:12px">🔒</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;text-transform:uppercase;color:var(--red)">Pool is Locked</div>
+      <div style="color:var(--text2);margin-top:8px">The entry deadline has passed. Check the standings!</div>
+      <button class="btn btn-ice" style="margin-top:16px" onclick="routeToPage('standings')">VIEW STANDINGS</button>
+    </div>
+
+    <div id="picks-form-wrap">
+
+      <!-- Entry tabs -->
+      <div id="entry-tabs" class="entry-tabs"></div>
+
+      <!-- Progress bar -->
+      <div class="picks-progress">
+        <div class="pp-step" id="pp-0"></div><div class="pp-step" id="pp-1"></div>
+        <div class="pp-step" id="pp-2"></div><div class="pp-step" id="pp-3"></div>
+        <div class="pp-step" id="pp-4"></div><div class="pp-step" id="pp-5"></div>
+        <div class="pp-step" id="pp-6"></div><div class="pp-step" id="pp-7"></div>
+        <div class="pp-step" id="pp-8"></div><div class="pp-step" id="pp-9"></div>
+        <div class="pp-step" id="pp-10"></div><div class="pp-step" id="pp-11"></div>
+      </div>
+
+      <form onsubmit="submitEntry(event)">
+
+        <!-- Owner info -->
+        <div class="panel" style="margin-bottom:16px">
+          <div class="panel-head"><div class="panel-title">ENTRY INFO</div></div>
+          <div style="padding:16px">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="f-ownerName">Your Name</label>
+                <input id="f-ownerName" class="form-input" type="text" placeholder="First Last" autocomplete="name">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="f-email">Email</label>
+                <input id="f-email" class="form-input" type="email" placeholder="you@email.com" autocomplete="email">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-teamName">Team Name</label>
+              <input id="f-teamName" class="form-input" type="text" placeholder="Your team name">
+            </div>
+          </div>
+        </div>
+
+        <!-- Forwards -->
+        <div class="panel" style="margin-bottom:12px">
+          <div class="draft-section-head">
+            <span class="draft-pos-badge f">F</span>
+            <span class="draft-pos-title">FORWARDS</span>
+            <span class="draft-slots-count">6 slots</span>
+          </div>
+          <div class="draft-grid-wrap" id="draft-forwards"></div>
+        </div>
+
+        <!-- Defence -->
+        <div class="panel" style="margin-bottom:12px">
+          <div class="draft-section-head">
+            <span class="draft-pos-badge d">D</span>
+            <span class="draft-pos-title">DEFENCE</span>
+            <span class="draft-slots-count">4 slots</span>
+          </div>
+          <div class="draft-grid-wrap" id="draft-defence"></div>
+        </div>
+
+        <!-- Goalies -->
+        <div class="panel" style="margin-bottom:12px">
+          <div class="draft-section-head">
+            <span class="draft-pos-badge g">G</span>
+            <span class="draft-pos-title">GOALIES</span>
+            <span class="draft-slots-count">2 slots</span>
+          </div>
+          <div class="draft-grid-wrap" id="draft-goalies"></div>
+        </div>
+
+        <!-- Division picks -->
+        <div class="panel" style="margin-bottom:20px">
+          <div class="panel-head">
+            <div class="panel-title amber">DIVISION WINNER PICKS</div>
+            <div class="label">+5 pts per correct pick at season end</div>
+          </div>
+          <div style="padding:16px">
+            <div class="div-picks-grid">
+              <div class="div-pick-group">
+                <label class="div-pick-label" for="f-divAtlantic">Atlantic</label>
+                <select id="f-divAtlantic" class="form-input"></select>
+              </div>
+              <div class="div-pick-group">
+                <label class="div-pick-label" for="f-divMetropolitan">Metropolitan</label>
+                <select id="f-divMetropolitan" class="form-input"></select>
+              </div>
+              <div class="div-pick-group">
+                <label class="div-pick-label" for="f-divCentral">Central</label>
+                <select id="f-divCentral" class="form-input"></select>
+              </div>
+              <div class="div-pick-group">
+                <label class="div-pick-label" for="f-divPacific">Pacific</label>
+                <select id="f-divPacific" class="form-input"></select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment reminder + submit -->
+        <div style="background:var(--amber-dim);border:1px solid var(--amber);border-radius:var(--r);padding:14px 16px;margin-bottom:16px">
+          <div class="label label-amber" style="margin-bottom:6px">⚠ PAYMENT REQUIRED</div>
+          <div style="font-size:12px;color:var(--text2)">
+            After submitting, e-transfer <strong style="color:var(--amber)">$50</strong> to
+            <strong style="color:var(--text)">matt.hope@rocketmail.com</strong> to confirm your entry.
+            Entries without payment will be removed before the deadline.
+          </div>
+        </div>
+
+        <button type="submit" id="submit-btn" class="submit-btn">SUBMIT ENTRY</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     STANDINGS PAGE
+════════════════════════════════════════════ -->
+<div id="page-standings" class="page">
+  <div class="wrap">
+    <div class="standings-topbar">
+      <div>
+        <div class="label label-ice" style="margin-bottom:8px">2025-26 SEASON</div>
+        <h1>FULL <span>STANDINGS</span></h1>
+      </div>
+      <button class="refresh-btn" onclick="initStandingsPage()">↺ REFRESH</button>
+    </div>
+
+    <!-- Full standings -->
+    <div class="panel" style="margin-bottom:20px">
+      <div class="panel-head">
+        <div class="panel-title ice">LEADERBOARD</div>
+        <div class="label">Updated nightly · Click row to view roster</div>
+      </div>
+      <div class="sc-cols">
+        <span class="ca">#</span>
+        <span></span>
+        <span>TEAM / OWNER</span>
+        <span class="ca">🎩</span>
+        <span class="ra">Δ RANK</span>
+        <span class="ra">PTS</span>
+      </div>
+      <div id="standings-body">
+        <div class="loading-row"><div class="spinner"></div>LOADING</div>
+      </div>
+    </div>
+
+    <!-- Player stats -->
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">PLAYER STATS</div>
+        <div class="stat-tabs">
+          <button class="stat-tab active" data-target="skater-stats-panel" onclick="document.querySelectorAll('.stat-tab').forEach(t=>t.classList.remove('active'));this.classList.add('active');document.getElementById('skater-stats-panel').style.display='';document.getElementById('goalie-stats-panel').style.display='none'">SKATERS</button>
+          <button class="stat-tab" data-target="goalie-stats-panel" onclick="document.querySelectorAll('.stat-tab').forEach(t=>t.classList.remove('active'));this.classList.add('active');document.getElementById('skater-stats-panel').style.display='none';document.getElementById('goalie-stats-panel').style.display='';renderGoalieStats()">GOALIES</button>
+        </div>
+      </div>
+
+      <div id="skater-stats-panel">
+        <table class="stat-tbl">
+          <thead>
+            <tr>
+              <th>PLAYER</th><th>TEAM</th>
+              <th class="ra">G</th><th class="ra">A</th><th class="ra">HT</th>
+              <th class="ra">PTS</th><th class="ra">OWNED</th>
+            </tr>
+          </thead>
+          <tbody id="skater-stats-body">
+            <tr><td colspan="7"><div class="loading-row"><div class="spinner"></div>LOADING</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="goalie-stats-panel" style="display:none">
+        <table class="stat-tbl">
+          <thead>
+            <tr>
+              <th>PLAYER</th><th>TEAM</th>
+              <th class="ra">W</th><th class="ra">SO</th>
+              <th class="ra">PTS</th><th class="ra">OWNED</th>
+            </tr>
+          </thead>
+          <tbody id="goalie-stats-body">
+            <tr><td colspan="6"><div class="loading-row">Click Goalies tab</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     RULES PAGE
+════════════════════════════════════════════ -->
+<div id="page-rules" class="page">
+  <div class="wrap">
+    <div class="rules-topbar">
+      <div class="label label-ice" style="margin-bottom:8px">2025-26 SEASON</div>
+      <h1>RULES &amp; <span>PAYOUTS</span></h1>
+    </div>
+
+    <!-- Scoring -->
+    <div class="label" style="margin-bottom:12px">SCORING SYSTEM</div>
+    <div class="rules-scoring-grid" style="margin-bottom:24px">
+
+      <div class="score-card">
+        <div class="score-card-head f-head">
+          <span class="draft-pos-badge f">F</span>
+          <span class="score-card-title">Forwards</span>
+        </div>
+        <div class="score-row"><span class="score-row-label">Goal</span><span class="score-row-pts">+1 PT</span></div>
+        <div class="score-row"><span class="score-row-label">Assist</span><span class="score-row-pts">+1 PT</span></div>
+        <div class="score-row"><span class="score-row-label">Hat Trick bonus</span><span class="score-row-pts" style="color:var(--amber)">+3 PTS</span></div>
+      </div>
+
+      <div class="score-card">
+        <div class="score-card-head d-head">
+          <span class="draft-pos-badge d">D</span>
+          <span class="score-card-title">Defence</span>
+        </div>
+        <div class="score-row"><span class="score-row-label">Goal</span><span class="score-row-pts">+1 PT</span></div>
+        <div class="score-row"><span class="score-row-label">Assist</span><span class="score-row-pts">+1 PT</span></div>
+        <div class="score-row"><span class="score-row-label">Hat Trick bonus</span><span class="score-row-pts" style="color:var(--amber)">+3 PTS</span></div>
+      </div>
+
+      <div class="score-card">
+        <div class="score-card-head g-head">
+          <span class="draft-pos-badge g">G</span>
+          <span class="score-card-title">Goalies</span>
+        </div>
+        <div class="score-row"><span class="score-row-label">Win</span><span class="score-row-pts">+1 PT</span></div>
+        <div class="score-row"><span class="score-row-label">Shutout</span><span class="score-row-pts">+2 PTS</span></div>
+        <div class="score-row"><span class="score-row-label">Loss / OTL</span><span class="score-row-pts" style="color:var(--text3)">0 PTS</span></div>
+      </div>
+    </div>
+
+    <!-- Division picks -->
+    <div class="panel" style="margin-bottom:20px">
+      <div class="panel-head"><div class="panel-title amber">DIVISION WINNER PICKS</div></div>
+      <div style="padding:16px">
+        <p style="font-size:13px;color:var(--text2);line-height:1.7">
+          At the start of the season, each entry picks one team to win each of the 4 NHL divisions
+          (Atlantic, Metropolitan, Central, Pacific). At the end of the regular season, each correct
+          division winner pick earns <strong style="color:var(--amber)">+5 bonus points</strong>.
+          Maximum of 20 bonus points from division picks.
+        </p>
+      </div>
+    </div>
+
+    <!-- IR Rule -->
+    <div class="panel" style="margin-bottom:20px">
+      <div class="panel-head"><div class="panel-title" style="color:var(--red)">INJURY RESERVE (IR)</div></div>
+      <div style="padding:16px">
+        <p style="font-size:13px;color:var(--text2);line-height:1.7">
+          Players placed on official NHL IR by their team are flagged in the pool.
+          IR players continue to accumulate points when they return to play —
+          their stats never stop counting. IR is informational only and does not change scoring.
+          Commissioner manages IR flags manually.
+        </p>
+      </div>
+    </div>
+
+    <!-- Payouts -->
+    <div class="label" style="margin-bottom:12px">PAYOUT STRUCTURE</div>
+    <div class="panel" style="margin-bottom:24px">
+      <table class="payout-tbl">
+        <thead>
+          <tr><th>PLACE</th><th>PAYOUT</th><th>NOTES</th></tr>
+        </thead>
+        <tbody>
+          <tr class="place-1"><td>🥇 1st</td><td>60% of pool</td><td>Champion</td></tr>
+          <tr><td>🥈 2nd</td><td>25% of pool</td><td>Runner-up</td></tr>
+          <tr><td>🥉 3rd</td><td>15% of pool</td><td>Third place</td></tr>
+        </tbody>
+      </table>
+      <div style="padding:12px 16px;font-size:11px;color:var(--text3);border-top:1px solid var(--border)">
+        Example: 20 entries × $50 = $1,000 pool → 1st: $600 · 2nd: $250 · 3rd: $150
+      </div>
+    </div>
+
+    <!-- Rules list -->
+    <div class="label" style="margin-bottom:12px">GENERAL RULES</div>
+    <div class="panel">
+      <div style="padding:0 16px">
+        ${[
+          ['Roster lock', 'All picks lock on October 7, 2025 at midnight ET. No changes after that.'],
+          ['Max entries', 'Up to 3 entries per person. Each entry costs $50.'],
+          ['Payment', 'E-transfer $50 per entry to matt.hope@rocketmail.com. Unpaid entries will be removed before the deadline.'],
+          ['Stats source', 'All stats pulled nightly from the official NHL API. No manual adjustments.'],
+          ['Playoffs', 'Pool runs regular season only. Playoff games do not count.'],
+          ['Ties', 'Tied entries share the payout equally. Commissioner decision is final.'],
+          ['Hat trick bonus', 'Awarded to all pool owners who have that player. +3 pts on top of the 3 goal points (total +6 for a hat trick game).'],
+        ].map(([title, text], i) => `
+          <div style="display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);${i===6?'border-bottom:none':''}">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);padding-top:2px;flex-shrink:0;width:16px">${i+1}</div>
+            <div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:3px">${title}</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.6">${text}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     ADMIN PAGE
+════════════════════════════════════════════ -->
+<div id="page-admin" class="page">
+  <div class="wrap">
+    <div class="admin-topbar">
+      <div class="label" style="color:var(--amber);margin-bottom:8px">COMMISSIONER TOOLS</div>
+      <h1>ADMIN <span style="color:var(--amber)">PANEL</span></h1>
+    </div>
+
+    <!-- Agent status cards -->
+    <div class="label" style="margin-bottom:12px">AGENT STATUS</div>
+    <div class="agent-grid" style="margin-bottom:24px">
+      <div class="agent-card idle" id="agent-card-AGT-001">
+        <div class="agent-id">AGT-001</div>
+        <div class="agent-name">Entry Receiver</div>
+        <div class="agent-status">Loading…</div>
+      </div>
+      <div class="agent-card idle" id="agent-card-AGT-002">
+        <div class="agent-id">AGT-002</div>
+        <div class="agent-name">NHL Stat Fetcher</div>
+        <div class="agent-status">Loading…</div>
+      </div>
+      <div class="agent-card idle" id="agent-card-AGT-003">
+        <div class="agent-id">AGT-003</div>
+        <div class="agent-name">Standings Calculator</div>
+        <div class="agent-status">Loading…</div>
+      </div>
+      <div class="agent-card idle" id="agent-card-AGT-004">
+        <div class="agent-id">AGT-004</div>
+        <div class="agent-name">Anomaly Detector</div>
+        <div class="agent-status">Loading…</div>
+      </div>
+      <div class="agent-card idle" id="agent-card-AGT-005">
+        <div class="agent-id">AGT-005</div>
+        <div class="agent-name">Comms Agent</div>
+        <div class="agent-status">Loading…</div>
+      </div>
+    </div>
+
+    <!-- Setup guide -->
+    <div class="label" style="margin-bottom:12px">SETUP CHECKLIST</div>
+    <div class="panel" style="margin-bottom:20px">
+      <div style="padding:0 16px">
+        ${[
+          'Create Firebase project at console.firebase.google.com',
+          'Enable Firestore (Native mode, us-central1)',
+          'Create service account → download JSON key',
+          'In Apps Script → Script Properties: add FIREBASE_PROJECT_ID and SERVICE_ACCOUNT_KEY',
+          'Paste AAHL-2526-Agents.gs into Apps Script',
+          'Run testFirestoreConnection() — confirm 200/404 response',
+          'Deploy as Web App (Execute as Me, Anyone access) → copy URL',
+          'Paste Web App URL into main.js APPS_SCRIPT_URL',
+          'Add Firebase app in console → copy firebaseConfig into main.js',
+          'Set up time triggers: AGT-002 @ 6AM, AGT-004 @ 6:15AM, AGT-003 @ 6:30AM',
+          'Upload all frontend files to GitHub repo → confirm GitHub Pages is live',
+          'Submit test entry → verify Firestore doc appears + email received',
+        ].map((step, i) => `
+          <div style="display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);${i===11?'border-bottom:none':''}">
+            <div style="width:22px;height:22px;border-radius:50%;background:var(--panel2);border:1px solid var(--border2);
+              display:grid;place-items:center;font-family:'Barlow Condensed',sans-serif;
+              font-size:10px;font-weight:700;color:var(--text3);flex-shrink:0">${i+1}</div>
+            <div style="font-size:12px;color:var(--text2);padding-top:3px">${step}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Apps Script code -->
+    <div class="label" style="margin-bottom:12px">APPS SCRIPT — FULL AGENT CODE</div>
+    <div class="code-block" style="margin-bottom:20px">
+      <div class="code-block-head">
+        AAHL-2526-Agents.gs — paste entire file into Apps Script
+        <button class="code-copy-btn" onclick="copyAgentCode()">COPY</button>
+      </div>
+      <pre id="agent-code-pre" class="agent-code">// Load the AAHL-2526-Agents.gs file from your build outputs and paste here.
+// The full agent code is in the AAHL-2526-Agents.gs file provided separately.</pre>
+    </div>
+
+    <!-- Firestore rules -->
+    <div class="label" style="margin-bottom:12px">FIRESTORE SECURITY RULES</div>
+    <div class="code-block" style="margin-bottom:20px">
+      <div class="code-block-head">
+        Paste into Firebase Console → Firestore → Rules
+        <button class="code-copy-btn" onclick="copyFirestoreRules()">COPY</button>
+      </div>
+      <pre id="firestore-rules-pre">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /entries/{doc}        { allow read: if true; allow write: if false; }
+    match /players/{doc}        { allow read: if true; allow write: if false; }
+    match /hatTricks/{doc}      { allow read: if true; allow write: if false; }
+    match /config/{doc}         { allow read: if true; allow write: if false; }
+    match /agentStatus/{doc}    { allow read: if true; allow write: if false; }
+    match /ir/{doc}             { allow read: if true; allow write: if false; }
+    match /threeStars/{doc}     { allow read: if true; allow write: if false; }
+    match /processedGames/{doc} { allow read: if false; allow write: if false; }
+    match /agentChecksums/{doc} { allow read: if false; allow write: if false; }
+  }
+}</pre>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── TEAM MODAL ── -->
+<div id="modal-overlay" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div class="modal-head-left">
+        <div class="modal-av" id="modal-av">AA</div>
+        <div>
+          <div class="modal-team-name" id="modal-team-name">Team Name</div>
+          <div class="modal-owner" id="modal-owner">Owner · Entry #1</div>
+        </div>
+      </div>
+      <div class="modal-stats">
+        <div class="modal-stat">
+          <div class="modal-stat-val ice" id="modal-total-pts">0</div>
+          <div class="modal-stat-lbl">PTS</div>
+        </div>
+        <div class="modal-stat">
+          <div class="modal-stat-val amber" id="modal-hat-tricks">0</div>
+          <div class="modal-stat-lbl">HAT TRICKS</div>
+        </div>
+        <div class="modal-stat">
+          <div class="modal-stat-val" id="modal-status" style="font-size:11px">PENDING</div>
+          <div class="modal-stat-lbl">STATUS</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="picks-section">
+        <div class="picks-section-title">
+          <span>ROSTER PICKS</span>
+          <span style="color:var(--text3)">PTS</span>
+        </div>
+        <div class="picks-grid" id="modal-picks"></div>
+        <div class="picks-section-title">DIVISION PICKS</div>
+        <div class="div-grid" id="modal-divisions"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+<script>
+  function copyAgentCode() {
+    const pre = document.getElementById('agent-code-pre');
+    navigator.clipboard.writeText(pre.textContent).then(() => showToast('Copied!', 'info'));
+  }
+  function copyFirestoreRules() {
+    const pre = document.getElementById('firestore-rules-pre');
+    navigator.clipboard.writeText(pre.textContent).then(() => showToast('Rules copied!', 'info'));
+  }
+</script>
+</body>
+</html>
