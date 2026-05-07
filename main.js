@@ -8,12 +8,12 @@
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxixSHzuApsOHAQKN4Qz1nbmKMN-T7vBgwaW0k2b5rlxGuFcaqx7A_8jZL73kwZbM09/exec';
 
 const FIREBASE_CONFIG = {
-  apiKey:            'YOUR_FIREBASE_API_KEY_HERE',
-  authDomain:        'YOUR_PROJECT_ID.firebaseapp.com',
-  projectId:         'YOUR_PROJECT_ID_HERE',
-  storageBucket:     'YOUR_PROJECT_ID.appspot.com',
-  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID_HERE',
-  appId:             'YOUR_APP_ID_HERE',
+  apiKey:            'AIzaSyD8xMarJLQHsoUm_yY-q63KWVH2nxmB9Co',
+  authDomain:        'aahl-2526.firebaseapp.com',
+  projectId:         'aahl-2526',
+  storageBucket:     'aahl-2526.firebasestorage.app',
+  messagingSenderId: '293365274832',
+  appId:             '1:293365274832:web:ee3c8dcec5b93dfd83e6d5',
 };
 
 // ── SEASON CONSTANTS ──────────────────────────────────────────
